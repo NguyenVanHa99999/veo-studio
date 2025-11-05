@@ -72,8 +72,9 @@ export const generateScriptFromVideo = async (
   videoFile: File,
   prompt: string,
   language: 'english' | 'vietnamese',
+  apiKey?: string,
 ): Promise<ScriptEntry[]> => {
-  const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+  const ai = new GoogleGenAI({apiKey: apiKey || process.env.API_KEY});
 
   const {base64Frames, duration} = await extractFramesFromVideo(videoFile);
 
@@ -193,8 +194,9 @@ export const generateAudioFromText = async (
   text: string,
   language: 'english' | 'vietnamese',
   voice: 'male' | 'female',
+  apiKey?: string,
 ): Promise<Blob> => {
-  const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+  const ai = new GoogleGenAI({apiKey: apiKey || process.env.API_KEY});
 
   const voiceMap = {
     english: {male: 'Puck', female: 'Kore'},
