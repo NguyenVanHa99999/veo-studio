@@ -55,17 +55,25 @@ class ApiKeyManager {
   }
 
   /**
-   * Mark key hiện tại bị rate limited
+   * Mark key bị rate limited
+   * @param keyString - API key string để tìm đúng key cần mark
+   * @param retryAfterSeconds - Số giây đến khi key available lại
    */
-  markRateLimited(retryAfterSeconds: number): void {
-    const key = this.keys[this.currentIndex];
-    if (key) {
-      key.availableAt = Date.now() + retryAfterSeconds * 1000;
-      key.errorCount++;
-      console.log(
-        `⏳ Key ${this.currentIndex + 1}/${this.keys.length} rate limited. Available in ${retryAfterSeconds}s`
-      );
+  markRateLimited(keyString: string, retryAfterSeconds: number): void {
+    // Tìm key index dựa trên key string (so sánh 20 ký tự đầu)
+    const keyIndex = this.keys.findIndex((k) => k.key.substring(0, 20) === keyString.substring(0, 20));
+    
+    if (keyIndex === -1) {
+      console.warn('⚠️ Key not found for rate limit marking');
+      return;
     }
+    
+    const key = this.keys[keyIndex];
+    key.availableAt = Date.now() + retryAfterSeconds * 1000;
+    key.errorCount++;
+    console.log(
+      `⏳ Key ${keyIndex + 1}/${this.keys.length} rate limited. Available in ${retryAfterSeconds}s`
+    );
   }
 
   /**

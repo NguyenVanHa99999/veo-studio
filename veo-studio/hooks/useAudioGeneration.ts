@@ -77,18 +77,22 @@ export const useAudioGeneration = ({
    */
   const generateSingleAudio = async (
     text: string,
-    maxRetries = 2
+    maxRetries = 5  // Tăng từ 2 → 5 để có thể thử nhiều keys hơn
   ): Promise<Blob> => {
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      const currentKey = apiKeyManager.getCurrentKey(); // Lưu key cho lần attempt này
+      console.log(`🔑 Using API Key: ${currentKey.substring(0, 20)}...`);
+      
       try {
-        const currentKey = apiKeyManager.getCurrentKey();
         const audioBlob = await generateAudioFromText(text, language, voice, currentKey);
+        console.log(`✅ Audio generated successfully with key ${currentKey.substring(0, 20)}...`);
         return audioBlob;
       } catch (error) {
         const {isRateLimit, retryAfterSeconds} = parseRateLimitError(error);
 
         if (isRateLimit) {
-          apiKeyManager.markRateLimited(retryAfterSeconds);
+          // Pass currentKey để mark đúng key bị rate limit
+          apiKeyManager.markRateLimited(currentKey, retryAfterSeconds);
 
           // Thử rotate sang key khác
           if (apiKeyManager.getTotalKeys() > 1 && apiKeyManager.hasAvailableKey()) {
