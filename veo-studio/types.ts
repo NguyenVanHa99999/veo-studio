@@ -63,3 +63,17 @@ export interface GenerateVideoParams {
   inputVideoObject: Video | null;
   isLooping: boolean;
 }
+
+// NEW: Types for AI Video Generator (Simple UI - waiting for local model)
+export interface VideoGeneratorConfig {
+  duration: '30s' | '45s' | '60s';
+  aspectRatio: '9:16' | '16:9' | '1:1';
+  style: 'realistic' | 'cinematic' | 'animated';
+}
+
+export interface GeneratedVideo {
+  url: string;
+  blob: Blob;
+  duration: string;
+  aspectRatio: string;
+}

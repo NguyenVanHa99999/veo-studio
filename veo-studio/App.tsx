@@ -6,6 +6,7 @@ import React, {useCallback, useState} from 'react';
 import VideoUpload from './components/VideoUpload';
 import ScriptGenerator from './components/ScriptGenerator';
 import AudioResults from './components/AudioResults';
+import {VideoGenerator} from './components/VideoGenerator';
 import {generateScriptFromVideo} from './services/geminiService';
 import {useApiKeyManager} from './hooks/useApiKeyManager';
 import {useAudioGeneration} from './hooks/useAudioGeneration';
@@ -133,49 +134,57 @@ const App: React.FC = () => {
         </h1>
       </header>
 
-      <main className="w-full max-w-4xl mx-auto flex-grow flex flex-col p-4 space-y-8">
-        {/* Step 1: Video Upload */}
-        <VideoUpload
-          videoUrl={videoUrl}
-          onVideoUpload={handleVideoUpload}
-          onRemoveVideo={handleRemoveVideo}
-        />
+      <main className="w-full max-w-7xl mx-auto flex-grow flex p-4 gap-4">
+        {/* LEFT: AI Video Generator (NEW - waiting for local model) */}
+        <div className="w-1/3 flex-shrink-0">
+          <VideoGenerator />
+        </div>
 
-        {/* Step 2: Generate Script */}
-        {videoUrl && (
-          <ScriptGenerator
-            prompt={prompt}
-            onPromptChange={setPrompt}
-            language={language}
-            onLanguageChange={setLanguage}
-            isLoading={isLoadingScript}
-            onGenerate={handleGenerateScript}
+        {/* RIGHT: Existing Features (không thay đổi) */}
+        <div className="flex-1 flex flex-col space-y-8">
+          {/* Step 1: Video Upload */}
+          <VideoUpload
+            videoUrl={videoUrl}
+            onVideoUpload={handleVideoUpload}
+            onRemoveVideo={handleRemoveVideo}
           />
-        )}
 
-        {/* Step 3: Results */}
-        {(isLoadingScript || script || errorMessage) && (
-          <div className="bg-gray-800 p-6 rounded-2xl border border-gray-700">
-            {errorMessage && (
-              <div className="text-center bg-red-900/20 border border-red-500 p-4 rounded-lg mb-4">
-                <p className="text-red-300">{errorMessage}</p>
-              </div>
-            )}
-            {script && (
-              <AudioResults
-                script={script}
-                audioData={audioData}
-                voice={voice}
-                onVoiceChange={setVoice}
-                isLoadingAudio={isLoadingAudio}
-                onGenerateAudio={handleGenerateAllAudio}
-                onRetryClip={retryAudioClip}
-                onDownloadScript={handleDownloadScript}
-                onDownloadClip={handleDownloadAudioClip}
-              />
-            )}
-          </div>
-        )}
+          {/* Step 2: Generate Script */}
+          {videoUrl && (
+            <ScriptGenerator
+              prompt={prompt}
+              onPromptChange={setPrompt}
+              language={language}
+              onLanguageChange={setLanguage}
+              isLoading={isLoadingScript}
+              onGenerate={handleGenerateScript}
+            />
+          )}
+
+          {/* Step 3: Results */}
+          {(isLoadingScript || script || errorMessage) && (
+            <div className="bg-gray-800 p-6 rounded-2xl border border-gray-700">
+              {errorMessage && (
+                <div className="text-center bg-red-900/20 border border-red-500 p-4 rounded-lg mb-4">
+                  <p className="text-red-300">{errorMessage}</p>
+                </div>
+              )}
+              {script && (
+                <AudioResults
+                  script={script}
+                  audioData={audioData}
+                  voice={voice}
+                  onVoiceChange={setVoice}
+                  isLoadingAudio={isLoadingAudio}
+                  onGenerateAudio={handleGenerateAllAudio}
+                  onRetryClip={retryAudioClip}
+                  onDownloadScript={handleDownloadScript}
+                  onDownloadClip={handleDownloadAudioClip}
+                />
+              )}
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );
